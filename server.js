@@ -24,14 +24,15 @@ app.post("/", (req, res) => {
     const incomingMessageText = body.data.message.text;
     const senderId = body.data.message.senderId;
 
-    if(senderId === 1) {
+    if(senderId == 1) {
+        console.log('this stopped')
         return;
     }
-    // Check incomingMessageText has submit and request substring
-
-
-
     console.log(incomingMessageText);
+
+    // Run regex to check if incomingMessageText includes request and submit
+
+
     axios.post("https://api.talkjs.com/v1/tB2H2aVb/conversations/3e5b86cb367a6b8c0689/messages", [
         {
             "text": "Im the master of the world!",
