@@ -1,4 +1,4 @@
-const extractDate = require("extract-date");
+
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -63,7 +63,7 @@ app.post("/", (req, res) => {
                     console.log(res.entities[entity].entity);
 
                     startDate = res.entities[entity].resolution.start;
-                    endDate = res.entities[entity].resolution.start;
+                    endDate = res.entities[entity].resolution.end;
                 }
             }
 
