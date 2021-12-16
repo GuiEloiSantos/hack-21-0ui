@@ -30,27 +30,33 @@ app.post("/", (req, res) => {
     }
     console.log(incomingMessageText);
 
-    // Run regex to check if incomingMessageText includes request and submit
+    // Check if message has "whats my leave balance"
+    if(incomingMessageText.includes("what") && incomingMessageText.includes("leave") && incomingMessageText.includes("balance") ) {
+        answerMessage('Your leave balance is: ' + 20 , body);
+    }
 
 
-    axios.post("https://api.talkjs.com/v1/tB2H2aVb/conversations/" + body.data.message.conversationId + "/messages", [
-        {
-            "text": incomingMessageText + " You",
-            "sender": "1",
-            "type": "UserMessage"
-        }
-    ], {
-        headers: {
-            'Authorization': 'Bearer sk_test_LswQkC1AuOIjw3Gqy8YnRLxiDaoZCGYi',
-            'Content-Type': 'application/json'
-        }
-    }).then(response => {
-        console.log(response.data);
-        res.send(response.data);
-    }).catch(error => {
-        console.log(error);
-        res.send(error);
-    });
+    function answerMessage(text, body) {
+        axios.post("https://api.talkjs.com/v1/tB2H2aVb/conversations/" + body.data.message.conversationId + "/messages", [
+            {
+                "text": text,
+                "sender": "1",
+                "type": "UserMessage"
+            }
+        ], {
+            headers: {
+                'Authorization': 'Bearer sk_test_LswQkC1AuOIjw3Gqy8YnRLxiDaoZCGYi',
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            console.log(response.data);
+            res.send(response.data);
+        }).catch(error => {
+            console.log(error);
+            res.send(error);
+        });
+    }
+
 
 
 })
