@@ -26,32 +26,36 @@ app.use(bodyParser.json({limit: "5mb"}));
 
 app.get("/", ((req, res) => {
         const response = manager.process('en', req.query.q).then(res => {
-            let startDate = false;
-            let endDate = false;
-            for (let entity in res.entities) {
-                if (res.entities[entity].entity === 'daterange') {
+            // select conversation_id = 1 from chat_state
 
 
-                    console.log(startDate);
-                }
-            }
+            let row = knex("chat_state").select('*').
+            where('conversation_id', 'xxxxxxxx').then(res => {
+                console.log(res);
+            }).catch(err => {
+                console.log(err);
+            })
         });
 
-
+        // send response hello world
+        res.send("Hello World");
     }
 ));
 
 app.post("/", async (req, res) => {
     const body = req.body;
     const senderId = body.data.message.senderId;
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
     let incomingMessageText = body.data.message.text;
 
     if (senderId === "1") {
         console.log('this stopped')
         return;
     }
-    let row = await knex("chat_state").select({conversation_id: body.data.message.conversationId});
+    let row = await knex("chat_state").select('*').
+    where('conversation_id', body.data.message.conversationId).then(res => {
+        console.log(res);
+    })
 
     if (row.length === 0) {
         // get random from 10 to 20
@@ -62,8 +66,12 @@ app.post("/", async (req, res) => {
 
         await knex("chat_state").insert({conversation_id: body.data.message.conversationId, data: {}});
 
-        row = await knex("chat_state").select({conversation_id: body.data.message.conversationId});
+        row = await knex("chat_state").select('*').
+        where('conversation_id', body.data.message.conversationId).then(res => {
+            console.log(res);
+        })
     }
+    row = row[0];
 
     console.log(row);
 
@@ -72,26 +80,35 @@ app.post("/", async (req, res) => {
 
 
     if (incomingMessageText.includes("apply") && incomingMessageText.includes("leave")) {
-
-        const response = manager.process('en', incomingMessageText).then(res => {
-            let startDate = false;
-            let endDate = false;
-            for (let entity in res.entities) {
-                if (res.entities[entity].entity === 'daterange') {
-                    console.log(res.entities[entity].entity);
-                    startDate = new Date(res.entities[entity].resolution.start).toLocaleDateString("en-US", options);
-                    endDate = new Date(res.entities[entity].resolution.end).toLocaleDateString("en-US", options);
-                }
+        const res = await manager.process('en', incomingMessageText);
+        let startDate = false;
+        let endDate = false;
+        for (let entity in res.entities) {
+            if (res.entities[entity].entity === 'daterange') {
+                console.log(res.entities[entity].entity);
+                startDate = new Date(res.entities[entity].resolution.start).toLocaleDateString("en-US", options);
+                endDate = new Date(res.entities[entity].resolution.end).toLocaleDateString("en-US", options);
             }
+        }
 
-            if (!startDate) {
-                return answerMessage("Did you mean to apply for leave? I didn't understand your date range", body);
-            }
+        if (!startDate) {
+            return answerMessage("Did you mean to apply for leave? I didn't understand your date range", body);
+        }
 
-            return answerMessage("Do you want to apply for leave from " + startDate + " to " + endDate + "? (Yes/No)", body);
-        });
-        return;
+        // get difference between start and end date
+        let diff = Math.abs(new Date(res.entities[entity].resolution.start) - new Date(res.entities[entity].resolution.end));
+        let days = Math.ceil(diff / (1000 * 3600 * 24));
+        console.log(days);
 
+        if (row.data.leave >= days) {
+            // update leave
+            let newLeave = row.data.leave - days;
+            await knex("chat_state").update({data: {leave: newLeave}}).where('conversation_id', body.data.message.conversationId);
+            // send response
+            return answerMessage("Do you want to apply for leave from " + startDate + " to " + endDate + "?", body);
+        } else {
+            return answerMessage("You don't have leave enough to fulfill your request", body);
+        }
     }
 
     if (incomingMessageText.includes("yes")) {
