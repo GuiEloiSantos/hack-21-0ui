@@ -37,17 +37,11 @@ app.get("/", ((req, res) => {
             }
         });
 
-        knex("chat_state").insert({conversation_id: "xxxxxxxx", data: {hi: "there"}})
-            .then(() => res.send("Hello World"))
-            .catch((error) => {
-                console.log("\x1b[36m", "server. error",error, "\x1b[0m",);
-                res.send("error")
-            });
+
     }
 ));
 
-app.post("/", (req, res) => {
-    console.log(req.body);
+app.post("/", async (req, res) => {
     const body = req.body;
     const senderId = body.data.message.senderId;
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -57,6 +51,22 @@ app.post("/", (req, res) => {
         console.log('this stopped')
         return;
     }
+    let row = await knex("chat_state").select({conversation_id: body.data.message.conversationId});
+
+    if (row.length === 0) {
+        // get random from 10 to 20
+        let random = Math.floor(Math.random() * 10) + 10;
+        let data = {
+            leave: random
+        }
+
+        await knex("chat_state").insert({conversation_id: body.data.message.conversationId, data: {}});
+
+        row = await knex("chat_state").select({conversation_id: body.data.message.conversationId});
+    }
+
+    console.log(row);
+
     console.log(incomingMessageText);
     incomingMessageText = incomingMessageText.toLowerCase();
 
