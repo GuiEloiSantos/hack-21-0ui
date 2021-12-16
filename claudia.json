@@ -1,0 +1,10 @@
+{
+  "lambda": {
+    "role": "hack-21-0ui-executor",
+    "name": "hack-21-0ui",
+    "region": "ap-southeast-2"
+  },
+  "api": {
+    "id": "svu9ic205a"
+  }
+}
