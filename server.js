@@ -10,9 +10,9 @@ const manager = new NlpManager({languages: ['en'], nlu: {useNoneFeature: false}}
 
 const knex = require("knex")({
     client: "pg",
-    searchPath: ["hack-21-0ui"],
+    searchPath: ["hack_21_0ui"],
     connection: {
-        database: "postgres",
+        database: "hack_21_0ui",
         host: "hack-21-0ui-1.cbh1nk2bl81k.ap-southeast-2.rds.amazonaws.com",
         port: 5432,
         user: "postgres",
@@ -37,7 +37,12 @@ app.get("/", ((req, res) => {
             }
         });
 
-        res.send("Hello World");
+        knex("chat_state").insert({conversation_id: "xxxxxxxx", data: {hi: "there"}})
+            .then(() => res.send("Hello World"))
+            .catch((error) => {
+                console.log("\x1b[36m", "server. error",error, "\x1b[0m",);
+                res.send("error")
+            });
     }
 ));
 
@@ -84,7 +89,6 @@ app.post("/", (req, res) => {
     }
 
     if (incomingMessageText.includes("what") && incomingMessageText.includes("leave") && incomingMessageText.includes("balance")) {
-        knex("chat_state").insert({conversation_id: body.data.message.conversationId, data: {hi: "there"}});
         return answerMessage('Your leave balance is: ' + 20, body);
     }
 
