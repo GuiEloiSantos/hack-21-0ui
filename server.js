@@ -29,11 +29,7 @@ app.get("/", ((req, res) => {
 
 
         const response = manager.process('en', req.query.q).then(res => {
-            for (let entity in res.entities) {
-                if (res.entities[entity].entity === 'daterange') {
-                    console.log(res.entities[entity].resolution);
-                }
-            }
+            console.log(res);
         });
 
         res.send("Hello World");
