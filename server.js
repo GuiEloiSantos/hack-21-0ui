@@ -1,3 +1,5 @@
+import extractDate from 'extract-date';
+
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -33,8 +35,18 @@ app.post("/", (req, res) => {
 
 
     if (incomingMessageText.includes("apply") && incomingMessageText.includes("leave")) {
-        const startDate = incomingMessageText.match(/\d{2}\/\d{2}\/\d{4}/g)[0];
-        const endDate = incomingMessageText.match(/\d{2}\/\d{2}\/\d{4}/g)[1];
+        const dates = extractDate(incomingMessageText);
+
+        if (!dates || dates.length <= 1) {
+            return answerMessage("Please send the dates on the format (dd/MM/YYYY)", body);
+        }
+
+        const orderedDates = dates.sort(function(a,b){
+            return Date.parse(a) > Date.parse(b);
+        });
+
+        const startDate = orderedDates[0];
+        const endDate = orderedDates[1];
 
         return answerMessage("Do you want to apply for leave from " + startDate + " to " + endDate + "? (Yes/No)", body);
     }
