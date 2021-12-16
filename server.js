@@ -29,9 +29,20 @@ app.post("/", (req, res) => {
         return;
     }
     console.log(incomingMessageText);
-
-    // Check if message has "whats my leave balance"
     incomingMessageText = incomingMessageText.toLowerCase();
+
+
+    if (incomingMessageText.includes("apply") && incomingMessageText.includes("leave")) {
+        const startDate = incomingMessageText.match(/\d{2}\/\d{2}\/\d{4}/g)[0];
+        const endDate = incomingMessageText.match(/\d{2}\/\d{2}\/\d{4}/g)[1];
+
+        return answerMessage("Do you want to apply for leave from " + startDate + " to " + endDate + "? (Yes/No)", body);
+    }
+
+    if (incomingMessageText.includes("yes")) {
+        return answerMessage("Please enter your leave reason", body);
+    }
+
     if (incomingMessageText.includes("what") && incomingMessageText.includes("leave") && incomingMessageText.includes("balance")) {
         return answerMessage('Your leave balance is: ' + 20, body);
     }
@@ -45,7 +56,7 @@ app.post("/", (req, res) => {
     return answerMessage("Sorry I didn't understand that, I can help you check your leave balance or apply to leave", body);
 
     function answerMessage(text, body) {
-        axios.post("https://api.talkjs.com/v1/tB2H2aVb/conversations/" + body.data.message.conversationId + "/messages", [
+        axios.post("https://api.talkjs.com/v1/" + process.env.TALK_JS_APP_ID + "/conversations/" + body.data.message.conversationId + "/messages", [
             {
                 "text": text,
                 "sender": "1",
@@ -53,7 +64,7 @@ app.post("/", (req, res) => {
             }
         ], {
             headers: {
-                'Authorization': 'Bearer sk_test_LswQkC1AuOIjw3Gqy8YnRLxiDaoZCGYi',
+                'Authorization': 'Bearer ' + process.env.TALK_JS_API_TOKEN,
                 'Content-Type': 'application/json'
             }
         }).then(response => {
