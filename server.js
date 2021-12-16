@@ -53,20 +53,15 @@ app.post("/", async (req, res) => {
         return;
     }
     let row = await knex("chat_state").select('*').where('conversation_id', body.data.message.conversationId);
-
     if (row.length === 0) {
         // get random from 10 to 20
         let random = Math.floor(Math.random() * 10) + 10;
         let data = {
             leave: random
         }
-
-        await knex("chat_state").insert({conversation_id: body.data.message.conversationId, data: {}});
-
-        row = await knex("chat_state").select('*').
-        where('conversation_id', body.data.message.conversationId).then(res => {
-            console.log(res);
-        })
+        await knex("chat_state").insert({conversation_id: body.data.message.conversationId, data: data});
+        row = await knex("chat_state").select('*').where('conversation_id', body.data.message.conversationId);
+        console.log(row);
     }
     row = row[0];
 
@@ -80,11 +75,16 @@ app.post("/", async (req, res) => {
         const res = await manager.process('en', incomingMessageText);
         let startDate = false;
         let endDate = false;
+        let diff = false;
+        let days = false;
         for (let entity in res.entities) {
             if (res.entities[entity].entity === 'daterange') {
                 console.log(res.entities[entity].entity);
                 startDate = new Date(res.entities[entity].resolution.start).toLocaleDateString("en-US", options);
                 endDate = new Date(res.entities[entity].resolution.end).toLocaleDateString("en-US", options);
+
+                diff = Math.abs(new Date(res.entities[entity].resolution.start) - new Date(res.entities[entity].resolution.end));
+                days = Math.ceil(diff / (1000 * 3600 * 24));
             }
         }
 
@@ -93,8 +93,7 @@ app.post("/", async (req, res) => {
         }
 
         // get difference between start and end date
-        let diff = Math.abs(new Date(res.entities[entity].resolution.start) - new Date(res.entities[entity].resolution.end));
-        let days = Math.ceil(diff / (1000 * 3600 * 24));
+
         console.log(days);
 
         if (row.data.leave >= days) {
