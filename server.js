@@ -15,16 +15,16 @@ const knex = require("knex")({
         password: "uB7mUnQ2xRdrTl",
     }
 })
-app.use(bodyParser.json({ limit: "5mb" }));
+app.use(bodyParser.json({limit: "5mb"}));
 
-app.get("/", ((req, res) => res.send("Its allllllliiiiiivvvvveeeeeeeeeee!!!!!!!!!!")) );
+app.get("/", ((req, res) => res.send("Its allllllliiiiiivvvvveeeeeeeeeee!!!!!!!!!!")));
 
 app.post("/", (req, res) => {
     const body = req.body;
     const incomingMessageText = body.data.message.text;
     const senderId = body.data.message.senderId;
 
-    if(senderId == 1) {
+    if (senderId == 1) {
         console.log('this stopped')
         return;
     }
@@ -33,17 +33,17 @@ app.post("/", (req, res) => {
     // Run regex to check if incomingMessageText includes request and submit
 
 
-    axios.post("https://api.talkjs.com/v1/tB2H2aVb/conversations/3e5b86cb367a6b8c0689/messages", [
+    axios.post("https://api.talkjs.com/v1/tB2H2aVb/conversations/" + body.data.message.conversationId + "/messages", [
         {
-            "text": "Im the master of the world!",
+            "text": incomingMessageText + " You",
             "sender": "1",
             "type": "UserMessage"
         }
-    ],{
+    ], {
         headers: {
-                'Authorization': 'Bearer sk_test_LswQkC1AuOIjw3Gqy8YnRLxiDaoZCGYi',
-                'Content-Type': 'application/json'
-            }
+            'Authorization': 'Bearer sk_test_LswQkC1AuOIjw3Gqy8YnRLxiDaoZCGYi',
+            'Content-Type': 'application/json'
+        }
     }).then(response => {
         console.log(response.data);
         res.send(response.data);
