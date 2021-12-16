@@ -84,6 +84,7 @@ app.post("/", (req, res) => {
     }
 
     if (incomingMessageText.includes("what") && incomingMessageText.includes("leave") && incomingMessageText.includes("balance")) {
+        knex("chat_state").insert({conversation_id: body.data.message.conversationId, data: {hi: "there"}});
         return answerMessage('Your leave balance is: ' + 20, body);
     }
 

@@ -6,4 +6,9 @@ CREATE TABLE test
     id         SERIAL NOT NULL PRIMARY KEY,
     message    TEXT   NOT NULL,
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc')
+);
+
+CREATE TABLE chat_state (
+    conversation_id text NOT NULL PRIMARY KEY,
+    data jsonb default '{}'::jsonb
 )
