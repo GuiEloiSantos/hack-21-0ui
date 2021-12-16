@@ -19,19 +19,6 @@ app.use(bodyParser.json({ limit: "5mb" }));
 
 app.get("/", ((req, res) => res.send("Its allllllliiiiiivvvvveeeeeeeeeee!!!!!!!!!!")) );
 
-
-// app.get("/test/:id", (req, res) => {
-//     const id = req.params.id;
-//         knex("test").select("message").where({id})
-//             .then(dbResult => {
-//                 res.json(dbResult);
-//             })
-//             .catch(error => {
-//                 console.log(error, error.message);
-//                 res.json(error);
-//             });
-//     }
-// );
 app.post("/", (req, res) => {
     const body = req.body;
     const incomingMessageText = body.data.message.text;
@@ -50,5 +37,5 @@ app.post("/", (req, res) => {
     res.json(body);
 })
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Sever listening at http://localhost:${PORT}`));
