@@ -18,6 +18,8 @@
     "express": "^4.17.1",
     "extract-date": "^2.8.2",
     "knex": "^0.95.14",
+    "node-nlp": "^3.10.2",
+    "node-nlp-rn": "^3.5.2",
     "pg": "^8.7.1"
   },
   "devDependencies": {

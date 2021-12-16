@@ -1,9 +1,12 @@
-import extractDate from 'extract-date';
-
+const extractDate = require("extract-date");
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const training = require("./training.js");
 const axios = require('axios').default;
+const {NlpManager} = require('node-nlp');
+
+const manager = new NlpManager({languages: ['en'], nlu: {useNoneFeature: false}});
 
 
 const knex = require("knex")({
@@ -17,9 +20,25 @@ const knex = require("knex")({
         password: "uB7mUnQ2xRdrTl",
     }
 })
+
+training(manager);
+
 app.use(bodyParser.json({limit: "5mb"}));
 
-app.get("/", ((req, res) => res.send("Its allllllliiiiiivvvvveeeeeeeeeee!!!!!!!!!!")));
+app.get("/", ((req, res) => {
+
+
+        const response = manager.process('en', req.query.q).then(res => {
+            for (let entity in res.entities) {
+                if (res.entities[entity].entity === 'daterange') {
+                    console.log(res.entities[entity].resolution);
+                }
+            }
+        });
+
+        res.send("Hello World");
+    }
+));
 
 app.post("/", (req, res) => {
     const body = req.body;
@@ -35,20 +54,27 @@ app.post("/", (req, res) => {
 
 
     if (incomingMessageText.includes("apply") && incomingMessageText.includes("leave")) {
-        const dates = extractDate(incomingMessageText);
 
-        if (!dates || dates.length <= 1) {
-            return answerMessage("Please send the dates on the format (dd/MM/YYYY)", body);
-        }
+        const response = manager.process('en', incomingMessageText).then(res => {
+            let startDate = false;
+            let endDate = false;
+            for (let entity in res.entities) {
+                if (res.entities[entity].entity === 'daterange') {
+                    console.log(res.entities[entity].entity);
 
-        const orderedDates = dates.sort(function(a,b){
-            return Date.parse(a) > Date.parse(b);
+                    startDate = res.entities[entity].resolution.start;
+                    endDate = res.entities[entity].resolution.start;
+                }
+            }
+
+            if (!startDate) {
+                return answerMessage("Did you mean to apply for leave? I didn't understand your date range", body);
+            }
+
+            return answerMessage("Do you want to apply for leave from " + startDate + " to " + endDate + "? (Yes/No)", body);
         });
+        return;
 
-        const startDate = orderedDates[0];
-        const endDate = orderedDates[1];
-
-        return answerMessage("Do you want to apply for leave from " + startDate + " to " + endDate + "? (Yes/No)", body);
     }
 
     if (incomingMessageText.includes("yes")) {
