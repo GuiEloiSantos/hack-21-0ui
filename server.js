@@ -50,4 +50,5 @@ app.post("/", (req, res) => {
     res.json(body);
 })
 
-module.exports = app;
+const PORT = 3000;
+app.listen(PORT, () => console.log(`Sever listening at http://localhost:${PORT}`));
