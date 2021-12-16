@@ -42,6 +42,7 @@ app.get("/", ((req, res) => {
 ));
 
 app.post("/", (req, res) => {
+    console.log(req.body);
     const body = req.body;
     const senderId = body.data.message.senderId;
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -85,6 +86,7 @@ app.post("/", (req, res) => {
     if (incomingMessageText.includes("what") && incomingMessageText.includes("leave") && incomingMessageText.includes("balance")) {
         return answerMessage('Your leave balance is: ' + 20, body);
     }
+
     if (incomingMessageText.includes("next") && incomingMessageText.includes("pay") && incomingMessageText.includes("when")) {
         return answerMessage('Your next payment is due at 24 of December', body);
     }
