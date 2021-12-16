@@ -26,7 +26,15 @@ app.use(bodyParser.json({limit: "5mb"}));
 
 app.get("/", ((req, res) => {
         const response = manager.process('en', req.query.q).then(res => {
-            console.log(res);
+            let startDate = false;
+            let endDate = false;
+            for (let entity in res.entities) {
+                if (res.entities[entity].entity === 'daterange') {
+
+
+                    console.log(startDate);
+                }
+            }
         });
 
         res.send("Hello World");
@@ -36,6 +44,7 @@ app.get("/", ((req, res) => {
 app.post("/", (req, res) => {
     const body = req.body;
     const senderId = body.data.message.senderId;
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     let incomingMessageText = body.data.message.text;
 
     if (senderId === "1") {
@@ -54,8 +63,8 @@ app.post("/", (req, res) => {
             for (let entity in res.entities) {
                 if (res.entities[entity].entity === 'daterange') {
                     console.log(res.entities[entity].entity);
-                    startDate = new Date(res.entities[entity].resolution.start).toString('ddd, dd MMM yyy');
-                    endDate = new Date(res.entities[entity].resolution.end).toString('ddd, dd MMM yyy');
+                    startDate = new Date(res.entities[entity].resolution.start).toLocaleDateString("en-US", options);
+                    endDate = new Date(res.entities[entity].resolution.end).toLocaleDateString("en-US", options);
                 }
             }
 
