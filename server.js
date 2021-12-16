@@ -32,11 +32,17 @@ app.post("/", (req, res) => {
 
     // Check if message has "whats my leave balance"
     incomingMessageText = incomingMessageText.toLowerCase();
-    if(incomingMessageText.includes("what") && incomingMessageText.includes("leave") && incomingMessageText.includes("balance") ) {
-        answerMessage('Your leave balance is: ' + 20 , body);
+    if (incomingMessageText.includes("what") && incomingMessageText.includes("leave") && incomingMessageText.includes("balance")) {
+        return answerMessage('Your leave balance is: ' + 20, body);
+    }
+    if (incomingMessageText.includes("next") && incomingMessageText.includes("pay") && incomingMessageText.includes("when")) {
+        return answerMessage('Your next payment is due at 24 of December', body);
+    }
+    if (incomingMessageText.includes("next") && incomingMessageText.includes("pay") && incomingMessageText.includes("how much")) {
+        return answerMessage('Your payment will be a total $100.000 and will be deposited on your account at 24 of December', body);
     }
 
-    answerMessage("Sorry I didn't understand that, I can help you check your leave balance or apply to leave" , body);
+    return answerMessage("Sorry I didn't understand that, I can help you check your leave balance or apply to leave", body);
 
     function answerMessage(text, body) {
         axios.post("https://api.talkjs.com/v1/tB2H2aVb/conversations/" + body.data.message.conversationId + "/messages", [
@@ -58,7 +64,6 @@ app.post("/", (req, res) => {
             res.send(error);
         });
     }
-
 
 
 })
