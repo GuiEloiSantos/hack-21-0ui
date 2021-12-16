@@ -1,4 +1,3 @@
-
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -26,8 +25,6 @@ training(manager);
 app.use(bodyParser.json({limit: "5mb"}));
 
 app.get("/", ((req, res) => {
-
-
         const response = manager.process('en', req.query.q).then(res => {
             console.log(res);
         });
@@ -58,8 +55,8 @@ app.post("/", (req, res) => {
                 if (res.entities[entity].entity === 'daterange') {
                     console.log(res.entities[entity].entity);
 
-                    startDate = res.entities[entity].resolution.start;
-                    endDate = res.entities[entity].resolution.end;
+                    startDate = new Date(res.entities[entity].resolution.start).toString();
+                    endDate = new Date(res.entities[entity].resolution.end).toString();
                 }
             }
 
