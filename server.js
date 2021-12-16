@@ -21,20 +21,22 @@ app.get("/", ((req, res) => res.send("Its allllllliiiiiivvvvveeeeeeeeeee!!!!!!!!
 
 app.post("/", (req, res) => {
     const body = req.body;
-    const incomingMessageText = body.data.message.text;
     const senderId = body.data.message.senderId;
+    let incomingMessageText = body.data.message.text;
 
-    if (senderId == 1) {
+    if (senderId === "1") {
         console.log('this stopped')
         return;
     }
     console.log(incomingMessageText);
 
     // Check if message has "whats my leave balance"
+    incomingMessageText = incomingMessageText.toLowerCase();
     if(incomingMessageText.includes("what") && incomingMessageText.includes("leave") && incomingMessageText.includes("balance") ) {
         answerMessage('Your leave balance is: ' + 20 , body);
     }
 
+    answerMessage("Sorry I didn't understand that, I can help you check your leave balance or apply to leave" , body);
 
     function answerMessage(text, body) {
         axios.post("https://api.talkjs.com/v1/tB2H2aVb/conversations/" + body.data.message.conversationId + "/messages", [
