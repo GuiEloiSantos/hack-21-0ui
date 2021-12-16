@@ -22,25 +22,31 @@ app.get("/", ((req, res) => res.send("Its allllllliiiiiivvvvveeeeeeeeeee!!!!!!!!
 app.post("/", (req, res) => {
     const body = req.body;
     const incomingMessageText = body.data.message.text;
+    // Check incomingMessageText has submit and request substring
+
+
+
     console.log(incomingMessageText);
-    axios.post("https://api.talkjs.com/v1/tB2H2aVb/conversations/3e5b86cb367a6b8c0689/messages", [
-        {
-            "text": "Im the master of the world!",
-            "sender": "1",
-            "type": "UserMessage"
-        }
-    ],{
-        headers: {
-                'Authorization': 'Bearer sk_test_LswQkC1AuOIjw3Gqy8YnRLxiDaoZCGYi',
-                'Content-Type': 'application/json'
-            }
-    }).then(response => {
-        console.log(response.data);
-        res.send(response.data);
-    }).catch(error => {
-        console.log(error);
-        res.send(error);
-    });
+    // axios.post("https://api.talkjs.com/v1/tB2H2aVb/conversations/3e5b86cb367a6b8c0689/messages", [
+    //     {
+    //         "text": "Im the master of the world!",
+    //         "sender": "1",
+    //         "type": "UserMessage"
+    //     }
+    // ],{
+    //     headers: {
+    //             'Authorization': 'Bearer sk_test_LswQkC1AuOIjw3Gqy8YnRLxiDaoZCGYi',
+    //             'Content-Type': 'application/json'
+    //         }
+    // }).then(response => {
+    //     console.log(response.data);
+    //     res.send(response.data);
+    // }).catch(error => {
+    //     console.log(error);
+    //     res.send(error);
+    // });
+
+
 })
 
 const PORT = process.env.PORT || 3000;
