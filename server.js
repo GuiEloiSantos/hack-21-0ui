@@ -52,10 +52,7 @@ app.post("/", async (req, res) => {
         console.log('this stopped')
         return;
     }
-    let row = await knex("chat_state").select('*').
-    where('conversation_id', body.data.message.conversationId).then(res => {
-        console.log(res);
-    })
+    let row = await knex("chat_state").select('*').where('conversation_id', body.data.message.conversationId);
 
     if (row.length === 0) {
         // get random from 10 to 20
