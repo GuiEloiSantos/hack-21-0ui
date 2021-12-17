@@ -142,8 +142,7 @@ app.post("/", async (req, res) => {
         return answerMessage('Your leave balance is: ' + row.data.leave + " days", body);
     }
 
-    if (incomingMessageText.includes("next")
-        && (incomingMessageText.includes("pay") || incomingMessageText.includes("salary"))
+    if ((incomingMessageText.includes("paid") || incomingMessageText.includes("pay") || incomingMessageText.includes("salary"))
         && incomingMessageText.includes("when")
     ) {
         return answerMessage('Your next payment is due at 24th of December', body);
