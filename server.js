@@ -101,7 +101,7 @@ app.post("/", async (req, res) => {
             row.data.pendingLeave = newLeave;
             row.data.lastMessage = 'apply';
 
-            await knex("chat_state").update({data: row.data}).where('conversation_id', row.conversationId);
+            await knex("chat_state").update({data: row.data}).where('conversation_id', row.conversation_id);
             //await knex("chat_state").update({data: {leave: newLeave}}).where('conversation_id', body.data.message.conversationId);
             // send response
             return answerMessage("Do you want to apply for leave from " + startDate + " to " + endDate + "?", body);
@@ -114,6 +114,8 @@ app.post("/", async (req, res) => {
         row.data.leave = row.data.pendingLeave;
         row.data.pendingLeave = null;
         row.data.lastMessage = null;
+
+        await knex("chat_state").update({data: row.data}).where('conversation_id', row.conversation_id);
         return answerMessage(
             "Awesome, your leave is applied, I hope you have a great time, your resulting leave balance is: "
             + row.data.pendingLeave + " days", body);
