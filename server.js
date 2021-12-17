@@ -110,7 +110,7 @@ app.post("/", async (req, res) => {
         }
     }
 
-    if (incomingMessageText.includes("Yes") && row.data.lastMessage === 'apply') {
+    if (incomingMessageText.includes("yes") && row.data.lastMessage === 'apply') {
         row.data.leave = row.data.pendingLeave;
         row.data.pendingLeave = null;
         row.data.lastMessage = null;
@@ -121,7 +121,7 @@ app.post("/", async (req, res) => {
             + row.data.pendingLeave + " days", body);
     }
 
-    if (incomingMessageText.includes("No") && row.data.lastMessage === 'apply') {
+    if (incomingMessageText.includes("no") && row.data.lastMessage === 'apply') {
         return answerMessage("Oh I must have miss understood something, you can try again anytime you like", body);
     }
 
