@@ -82,8 +82,17 @@ app.post("/", async (req, res) => {
                 startDate = new Date(res.entities[entity].resolution.start).toLocaleDateString("en-AU", options);
                 endDate = new Date(res.entities[entity].resolution.end).toLocaleDateString("en-AU", options);
 
-                diff = Math.abs(new Date(res.entities[entity].resolution.start) - new Date(res.entities[entity].resolution.end));
-                days = Math.ceil(diff / (1000 * 3600 * 24));
+                // exclude weekends
+                let start = new Date(res.entities[entity].resolution.start);
+                let end = new Date(res.entities[entity].resolution.end);
+                let count = 0;
+                while (start <= end) {
+                    if (start.getDay() !== 0 && start.getDay() !== 6) {
+                        count++;
+                    }
+                    start.setDate(start.getDate() + 1);
+                }
+                days = count;
             }
         }
 
@@ -104,7 +113,9 @@ app.post("/", async (req, res) => {
             await knex("chat_state").update({data: row.data}).where('conversation_id', row.conversation_id);
             //await knex("chat_state").update({data: {leave: newLeave}}).where('conversation_id', body.data.message.conversationId);
             // send response
-            return answerMessage("Do you want to apply for leave from " + startDate + " to " + endDate + "?", body);
+            return answerMessage("Do you want to apply for leave from "
+                + startDate + " to " + endDate + "? This will take a total of " + days
+                + " from your current leave, leaving your leave balance at" + newLeave, body);
         } else {
             return answerMessage("You don't have leave enough to fulfill your request", body);
         }
