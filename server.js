@@ -149,8 +149,7 @@ app.post("/", async (req, res) => {
         return answerMessage('Your next payment is due at 24th of December', body);
     }
 
-    if (incomingMessageText.includes("next")
-        && (incomingMessageText.includes("pay") || incomingMessageText.includes("salary"))
+    if ((incomingMessageText.includes("paid") || incomingMessageText.includes("pay") || incomingMessageText.includes("salary"))
         && incomingMessageText.includes("how much")
     ) {
         return answerMessage('Your payment will be a total $100.000 and will be deposited on your account at 24th of December', body);
