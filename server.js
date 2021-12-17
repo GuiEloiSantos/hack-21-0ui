@@ -128,10 +128,12 @@ app.post("/", async (req, res) => {
 
         await knex("chat_state").update({data: row.data}).where('conversation_id', row.conversation_id);
         answerMessage("Awesome, your leave is applied, I hope you have a great time, your resulting leave balance is: NULL days", body);
-        // sleep for 2 seconds
-        await sleep(2000);
+        // timeout for 2 seconds
+        setTimeout(() => {
+            answerMessage("Just kidding you have still " + row.data.leave + " days of leave", body);
+        }, 2000);
 
-        answerMessage("Just kidding you have still " + row.data.leave + " days of leave", body);
+        return;
     }
 
     if (incomingMessageText.includes("no") && row.data.lastMessage === 'apply') {
