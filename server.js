@@ -7,7 +7,6 @@ const {NlpManager} = require('node-nlp');
 
 const manager = new NlpManager({languages: ['en'], nlu: {useNoneFeature: false}});
 
-
 const knex = require("knex")({
     client: "pg",
     searchPath: ["hack_21_0ui"],
@@ -74,7 +73,6 @@ app.post("/", async (req, res) => {
         const res = await manager.process('en', incomingMessageText);
         let startDate = false;
         let endDate = false;
-        let diff = false;
         let days = false;
         for (let entity in res.entities) {
             if (res.entities[entity].entity === 'daterange') {
@@ -115,9 +113,9 @@ app.post("/", async (req, res) => {
             // send response
             return answerMessage("Do you want to apply for leave from "
                 + startDate + " to " + endDate + "? This will take a total of " + days
-                + " from your current leave, leaving your leave balance at " + newLeave, body);
+                + "days from your current leave, leaving you with a leave balance of " + newLeave + " days", body);
         } else {
-            return answerMessage("You don't have leave enough to fulfill your request", body);
+            return answerMessage("You don't have enough leave to fulfill your request, your current leave balance is " + row.data.leave + " days", body);
         }
     }
 
@@ -131,27 +129,37 @@ app.post("/", async (req, res) => {
         // timeout for 2 seconds
         setTimeout(() => {
             answerMessage("Just kidding you have still " + row.data.leave + " days of leave 😀", body);
-        }, 2000);
+        }, 3000);
 
         return;
     }
 
     if (incomingMessageText.includes("no") && row.data.lastMessage === 'apply') {
-        return answerMessage("Oh I must have miss understood something, you can try again anytime you like", body);
+        return answerMessage("Oh I must have misunderstood something, you can try again anytime you like", body);
     }
 
-    if (incomingMessageText.includes("what") && incomingMessageText.includes("leave") && incomingMessageText.includes("balance")) {
-        return answerMessage('Your leave balance is: ' + row.data.leave, body);
+    if ((incomingMessageText.includes("what") || incomingMessageText.includes("how much")) && incomingMessageText.includes("leave")) {
+        return answerMessage('Your leave balance is: ' + row.data.leave + " days", body);
     }
 
-    if (incomingMessageText.includes("next") && incomingMessageText.includes("pay") && incomingMessageText.includes("when")) {
-        return answerMessage('Your next payment is due at 24 of December', body);
-    }
-    if (incomingMessageText.includes("next") && incomingMessageText.includes("pay") && incomingMessageText.includes("how much")) {
-        return answerMessage('Your payment will be a total $100.000 and will be deposited on your account at 24 of December', body);
+    if (incomingMessageText.includes("next")
+        && (incomingMessageText.includes("pay") || incomingMessageText.includes("salary"))
+        && incomingMessageText.includes("when")
+    ) {
+        return answerMessage('Your next payment is due at 24th of December', body);
     }
 
-    return answerMessage("Sorry I didn't understand that, I can help you check your leave balance or apply to leave", body);
+    if (incomingMessageText.includes("next")
+        && (incomingMessageText.includes("pay") || incomingMessageText.includes("salary"))
+        && incomingMessageText.includes("how much")
+    ) {
+        return answerMessage('Your payment will be a total $100.000 and will be deposited on your account at 24th of December', body);
+    }
+
+    return answerMessage(
+        "Sorry I didn't understand that, I can help you check your leave balance or apply for leave or check when is your next payment due",
+        body
+    );
 
     function answerMessage(text, body) {
         axios.post("https://api.talkjs.com/v1/" + process.env.TALK_JS_APP_ID + "/conversations/" + body.data.message.conversationId + "/messages", [
