@@ -115,7 +115,7 @@ app.post("/", async (req, res) => {
             // send response
             return answerMessage("Do you want to apply for leave from "
                 + startDate + " to " + endDate + "? This will take a total of " + days
-                + " from your current leave, leaving your leave balance at" + newLeave, body);
+                + " from your current leave, leaving your leave balance at " + newLeave, body);
         } else {
             return answerMessage("You don't have leave enough to fulfill your request", body);
         }
@@ -127,9 +127,11 @@ app.post("/", async (req, res) => {
         row.data.lastMessage = null;
 
         await knex("chat_state").update({data: row.data}).where('conversation_id', row.conversation_id);
-        return answerMessage(
-            "Awesome, your leave is applied, I hope you have a great time, your resulting leave balance is: "
-            + row.data.pendingLeave + " days", body);
+        answerMessage("Awesome, your leave is applied, I hope you have a great time, your resulting leave balance is: NULL days", body);
+        // sleep for 2 seconds
+        await sleep(2000);
+
+        answerMessage("Just kidding you have still " + row.data.leave + " days of leave", body);
     }
 
     if (incomingMessageText.includes("no") && row.data.lastMessage === 'apply') {
