@@ -29,8 +29,7 @@ app.get("/", ((req, res) => {
             // select conversation_id = 1 from chat_state
 
 
-            let row = knex("chat_state").select('*').
-            where('conversation_id', 'xxxxxxxx').then(res => {
+            let row = knex("chat_state").select('*').where('conversation_id', 'xxxxxxxx').then(res => {
                 console.log(res);
             }).catch(err => {
                 console.log(err);
@@ -80,8 +79,8 @@ app.post("/", async (req, res) => {
         for (let entity in res.entities) {
             if (res.entities[entity].entity === 'daterange') {
                 console.log(res.entities[entity].entity);
-                startDate = new Date(res.entities[entity].resolution.start).toLocaleDateString("en-US", options);
-                endDate = new Date(res.entities[entity].resolution.end).toLocaleDateString("en-US", options);
+                startDate = new Date(res.entities[entity].resolution.start).toLocaleDateString("en-AU", options);
+                endDate = new Date(res.entities[entity].resolution.end).toLocaleDateString("en-AU", options);
 
                 diff = Math.abs(new Date(res.entities[entity].resolution.start) - new Date(res.entities[entity].resolution.end));
                 days = Math.ceil(diff / (1000 * 3600 * 24));
@@ -99,7 +98,11 @@ app.post("/", async (req, res) => {
         if (row.data.leave >= days) {
             // update leave
             let newLeave = row.data.leave - days;
-            await knex("chat_state").update({data: {leave: newLeave}}).where('conversation_id', body.data.message.conversationId);
+            row.data.pendingLeave = newLeave;
+            row.data.lastMessage = 'apply';
+
+            await knex("chat_state").update({data: row.data}).where('conversation_id', row.conversationId);
+            //await knex("chat_state").update({data: {leave: newLeave}}).where('conversation_id', body.data.message.conversationId);
             // send response
             return answerMessage("Do you want to apply for leave from " + startDate + " to " + endDate + "?", body);
         } else {
@@ -107,12 +110,21 @@ app.post("/", async (req, res) => {
         }
     }
 
-    if (incomingMessageText.includes("yes")) {
-        return answerMessage("Please enter your leave reason", body);
+    if (incomingMessageText.includes("Yes") && row.data.lastMessage === 'apply') {
+        row.data.leave = row.data.pendingLeave;
+        row.data.pendingLeave = null;
+        row.data.lastMessage = null;
+        return answerMessage(
+            "Awesome, your leave is applied, I hope you have a great time, your resulting leave balance is: "
+            + row.data.pendingLeave + " days", body);
+    }
+
+    if (incomingMessageText.includes("No") && row.data.lastMessage === 'apply') {
+        return answerMessage("Oh I must have miss understood something, you can try again anytime you like", body);
     }
 
     if (incomingMessageText.includes("what") && incomingMessageText.includes("leave") && incomingMessageText.includes("balance")) {
-        return answerMessage('Your leave balance is: ' + 20, body);
+        return answerMessage('Your leave balance is: ' + row.data.leave, body);
     }
 
     if (incomingMessageText.includes("next") && incomingMessageText.includes("pay") && incomingMessageText.includes("when")) {
