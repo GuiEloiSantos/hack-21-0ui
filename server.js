@@ -130,7 +130,7 @@ app.post("/", async (req, res) => {
         answerMessage("Awesome, your leave is applied, I hope you have a great time, your resulting leave balance is: NULL days", body);
         // timeout for 2 seconds
         setTimeout(() => {
-            answerMessage("Just kidding you have still " + row.data.leave + " days of leave", body);
+            answerMessage("Just kidding you have still " + row.data.leave + " days of leave U+1F600", body);
         }, 2000);
 
         return;
