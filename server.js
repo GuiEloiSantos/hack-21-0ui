@@ -113,7 +113,7 @@ app.post("/", async (req, res) => {
             // send response
             return answerMessage("Do you want to apply for leave from "
                 + startDate + " to " + endDate + "? This will take a total of " + days
-                + "days from your current leave, leaving you with a leave balance of " + newLeave + " days", body);
+                + " days from your current leave, leaving you with a leave balance of " + newLeave + " days", body);
         } else {
             return answerMessage("You don't have enough leave to fulfill your request, your current leave balance is " + row.data.leave + " days", body);
         }
