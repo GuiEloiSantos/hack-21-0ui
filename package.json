@@ -14,11 +14,11 @@
   "dependencies": {
     "aws-serverless-express": "^3.4.0",
     "axios": "^0.24.0",
-    "body-parser": "^1.19.1",
-    "express": "^4.17.1",
+    "body-parser": "^1.19.2",
+    "express": "^4.17.3",
     "extract-date": "^2.8.2",
-    "knex": "^0.95.14",
-    "node-nlp": "^3.10.2",
+    "knex": "^2.4.0",
+    "node-nlp": "^4.0.1",
     "node-nlp-rn": "^3.5.2",
     "pg": "^8.7.1"
   },
