@@ -20,7 +20,7 @@
     "knex": "^2.4.0",
     "node-nlp": "^4.0.1",
     "node-nlp-rn": "^3.5.2",
-    "pg": "^8.7.1"
+    "pg": "^8.10.0"
   },
   "devDependencies": {
     "claudia": "^5.14.0"
